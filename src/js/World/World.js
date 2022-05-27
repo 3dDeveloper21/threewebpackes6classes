@@ -1,7 +1,9 @@
 import { createCamera } from './components/camera'
 import { createCube, cubeTick } from './components/cube'
 import { createScene } from './components/scene'
+import { createLights } from './components/lights.js'
 
+import { createControls } from './systems/controls.js'
 import { createRenderer } from './systems/renderer'
 import { Resizer } from './systems/Resizer'
 import { Loop } from './systems/Loop'
@@ -15,17 +17,20 @@ class World {
     camera = createCamera(sizes)
     scene = createScene()
     renderer = createRenderer(container, sizes)
-    loop = new Loop(camera, scene, renderer)
+
+    const controls = createControls(camera, renderer.domElement)
 
     const cube = createCube()
+    const light = createLights()
 
-    loop.updatables.push(cubeTick);
+    loop = new Loop(camera, scene, renderer)
 
+    loop.updatables.push(cubeTick)
 
-    scene.add(cube)
+    // Add childern/scene objects to the scene
+    scene.add(cube, light.ambientLight, light.mainLight)
 
     const resizer = new Resizer(camera, renderer, sizes)
-  
   }
 
   render() {
@@ -33,12 +38,12 @@ class World {
     renderer.render(scene, camera)
   }
 
-  start(){
-    loop.start();
+  start() {
+    loop.start()
   }
 
-  stop(){
-    loop.stop();
+  stop() {
+    loop.stop()
   }
 }
 
